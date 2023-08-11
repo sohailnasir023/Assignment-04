@@ -1,0 +1,39 @@
+name: "Terraform"
+
+
+on:
+  push:
+    brach:
+      -master
+
+jobs:
+  terraform:
+    name: "terraform"
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY}}
+      AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ID}}
+    steps:
+      -name: checkout
+       uses: actions/checkout@v2
+
+      -name: setup terraform config
+       uses: hashicorp/setup-terraform@v2
+
+      -name: terraform formating
+       id: fmt
+       run: terraform fmt -check 
+
+      -name: terraform init
+        id: init
+        run: terraform init
+      
+      -name: terraform plan
+       id: plan
+       run: terraform plan
+
+      -name: terraform approve
+       id: approve
+       run: terraform apply -auto-approve
+
+        
