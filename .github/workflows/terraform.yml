@@ -55,7 +55,8 @@ jobs:
           echo "$STATE_FILE_CONTENT" > terraform.tfstate
 
       - name: terraform init for destroy
-        run: terraform init
+        run: terraform init -reconfigure
+
       
       - name: terraform destroy
         run: terraform destroy -auto-approve
