@@ -26,8 +26,8 @@ jobs:
 
       - name: terraform init
         id: init
-        run: terraform init -backend-config="bucket=assignment04-sohail-tfstate-file-bucket" -backend-config="key=terraform.tfstate" -backend-config="region=us-east-1"
-
+        run: terraform init
+      
       - name: terraform plan
         id: plan
         run: terraform plan
@@ -36,4 +36,6 @@ jobs:
         id: approve
         run: terraform apply -auto-approve
 
-    
+      - name: terraform destroy
+        id: destroy 
+        run: terraform destroy -auto-approve
