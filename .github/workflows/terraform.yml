@@ -1,66 +1,73 @@
 name: "Terraform"
 
 on:
-  push:
-    branches:
-      - master
   workflow_dispatch:
     inputs:
-      destroy:
-        description: 'Trigger resource destruction'
-        required: true
+      # Terraform action you want to perform
+      action:
+        description: 'Terraform Action to Perform'
+        type: choice
+        options:
+        - Terraform_apply
+        - Terraform_destroy
 
 jobs:
-  terraform:
-    name: "terraform"
+  terraform_apply:
+    name: "Terraform_apply"
+    if: ${{ github.event.inputs.action == 'Terraform_apply' }}
     runs-on: ubuntu-latest
-    env:
-      AWS_ACCESS_KEY_ID: ${{secrets.AWS_SECRET_ID}}
-      AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_ACCESS_KEY}}
 
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v2
 
-      - name: setup terraform config
-        uses: hashicorp/setup-terraform@v2
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
 
-      - name: terraform formatting
-        id: fmt
-        run: terraform fmt -check 
-
-      - name: terraform init
+      - name: Terraform Init
         id: init
         run: terraform init
+        env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            
+      
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate 
 
-      - name: terraform plan
-        id: plan
-        run: terraform plan
-
-      - name: terraform apply
-        id: approve
-        run: terraform apply -auto-approve
-
-  destroy:
+      - name: Terraform Apply
+        id: apply
+        run: terraform apply -auto-approve -var-file=variables.tfvars
+        env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            
+  
+  terraform_destroy:
+    name: "Terraform_destroy"
+    if: ${{ github.event.inputs.action == 'Terraform_destroy' }}
     runs-on: ubuntu-latest
+
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Configure AWS credentials
-        run: |
-          aws configure set aws_access_key_id ${{ secrets.AWS_SECRET_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_ACCESS_KEY }}
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
 
-      - name: Download state file from S3
-        run: |
-          aws s3 cp s3://assignment04-sohail-tfstate-file-bucket/statefilefolder/terraform.tfstate ./terraform.tfstate --debug
+      - name: Terraform Init
+        id: init
+        run: terraform init
+        env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            
 
-      - name: Preserve state file as an artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: terraform-state
-          path: ./terraform.tfstate
-
-      - name: terraform destroy
-        run: terraform destroy -auto-approve
+      - name: Terraform Destroy
+        id: destroy
+        run: terraform destroy -auto-approve -var-file=variables.tfvars
+        env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            
