@@ -1,6 +1,9 @@
 name: "Terraform"
 
 on:
+  push:
+    branches:
+      - master
   workflow_dispatch:
     inputs:
       # Terraform action you want to perform.
