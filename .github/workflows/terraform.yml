@@ -54,7 +54,7 @@ jobs:
 
       - name: Download state file from S3
         run: |
-          aws s3 cp s3://assignment04-sohail-tfstate-file-bucket/statefilefolder/terraform.tfstate ./terraform.tfstate
+          aws s3 cp s3://assignment04-sohail-tfstate-file-bucket/statefilefolder/terraform.tfstate ./terraform.tfstate --debug
 
       - name: Preserve state file as an artifact
         uses: actions/upload-artifact@v2
