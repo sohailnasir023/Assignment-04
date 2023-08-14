@@ -12,6 +12,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{secrets.AWS_SECRET_ID}}
       AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_ACCESS_KEY}}
+      
     steps:
       - name: checkout
         uses: actions/checkout@v2
@@ -25,8 +26,8 @@ jobs:
 
       - name: terraform init
         id: init
-        run: terraform init
-      
+        run: terraform init -backend-config="bucket=assignment04-sohail-tfstate-file-bucket" -backend-config="key=terraform.tfstate" -backend-config="region=us-east-1"
+
       - name: terraform plan
         id: plan
         run: terraform plan
@@ -34,8 +35,5 @@ jobs:
       - name: terraform apply
         id: approve
         run: terraform apply -auto-approve
-      
 
-      - name: terraform destroy
-        id: destroy 
-        run: terraform destroy -auto-approve 
+    

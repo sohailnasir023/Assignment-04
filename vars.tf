@@ -81,3 +81,7 @@ variable "instance_name" {
   description = "name of instance"
   default     = "assignment02"
 }
+variable "s3_bucket_name" {
+  description = "name of instance"
+  default     = "assignment04-test-bucket-sohail"
+}
