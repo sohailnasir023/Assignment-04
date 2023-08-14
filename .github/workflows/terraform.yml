@@ -47,16 +47,20 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: setup terraform config
-        uses: hashicorp/setup-terraform@v2
-
-      - name: Download state file
+      - name: Configure AWS credentials
         run: |
-          echo "$STATE_FILE_CONTENT" > terraform.tfstate
+          aws configure set aws_access_key_id ${{ secrets.AWS_SECRET_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_ACCESS_KEY }}
 
-      - name: terraform init for destroy
-        run: terraform init -reconfigure
+      - name: Download state file from S3
+        run: |
+          aws s3 cp s3://assignment04-sohail-tfstate-file-bucket/statefilefolder/terraform.tfstate ./terraform.tfstate
 
-      
+      - name: Preserve state file as an artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: terraform-state
+          path: ./terraform.tfstate
+
       - name: terraform destroy
         run: terraform destroy -auto-approve
