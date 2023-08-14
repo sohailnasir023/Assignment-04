@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:
+    inputs:
+      destroy:
+        description: 'Trigger resource destruction'
+        required: true
 
 jobs:
   terraform:
@@ -12,7 +17,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{secrets.AWS_SECRET_ID}}
       AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_ACCESS_KEY}}
-      
+
     steps:
       - name: checkout
         uses: actions/checkout@v2
@@ -27,7 +32,7 @@ jobs:
       - name: terraform init
         id: init
         run: terraform init
-      
+
       - name: terraform plan
         id: plan
         run: terraform plan
@@ -35,3 +40,22 @@ jobs:
       - name: terraform apply
         id: approve
         run: terraform apply -auto-approve
+
+  destroy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: setup terraform config
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Download state file
+        run: |
+          echo "$STATE_FILE_CONTENT" > terraform.tfstate
+
+      - name: terraform init for destroy
+        run: terraform init
+      
+      - name: terraform destroy
+        run: terraform destroy -auto-approve
