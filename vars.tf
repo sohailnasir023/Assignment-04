@@ -86,8 +86,8 @@ variable "s3_bucket_name" {
   type        = string
   default     = "assignment04-test-bucket-sohail"
 }
-variable "instance_keypair_name" {
+/*/variable "instance_keypair_name" {
   description = "name of the keypair"
   type        = string
   default     = "key-pair-EC2.pem"
-}
+}/*/
