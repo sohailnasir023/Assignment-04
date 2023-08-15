@@ -3,6 +3,7 @@ resource "aws_instance" "test_instance" {
   instance_type               = var.instance_type
   vpc_security_group_ids      = [aws_security_group.vpc_sg.id]
   subnet_id                   = element(module.vpc.public_subnets, 0)
+  key_name                    = var.instance_keypair_name
   associate_public_ip_address = true
 
   tags = {
